@@ -1,0 +1,74 @@
+﻿/* 1998 Website Styles */
+body {
+    background-color: #c0c0c0;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><rect width="100" height="100" fill="%23000000"/></svg>');
+    margin: 0;
+    padding: 20px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+/* Classic link styles */
+a {
+    color: #0000FF;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #FF0000;
+    text-decoration: none;
+}
+
+/* Blink animation for nostalgia */
+blink {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* Classic table borders */
+table {
+    border: 2px outset #c0c0c0;
+    background-color: #ffffff;
+}
+
+td {
+    border: 1px inset #c0c0c0;
+}
+
+/* Marquee styles */
+marquee {
+    font-family: "Comic Sans MS", cursive;
+    color: #FF0000;
+    font-size: 14px;
+}
+
+/* Classic heading styles */
+h1, h2, h3 {
+    font-family: "Arial Black", Arial, sans-serif;
+}
+
+/* Animated gif borders */
+img {
+    border: 0;
+}
+
+/* Center align for tables */
+center {
+    text-align: center;
+}
+
+/* Classic horizontal rule */
+hr {
+    height: 3px;
+    background-color: #0000FF;
+    border: none;
+}
+
+/* Visitor counter style */
+.counter {
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    color: #FF0000;
+}
