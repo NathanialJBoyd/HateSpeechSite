@@ -1,12 +1,10 @@
-﻿/* Modern CSS Reset with 1998 Aesthetic */
-* {
+﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
 :root {
-    /* 1998 Color Palette */
     --bg-color: #c0c0c0;
     --text-color: #000000;
     --link-color: #0000FF;
@@ -14,7 +12,7 @@
     --active-link: #FF0000;
     --accent-color: #FF0000;
     --border-color: #0000FF;
-    --retro-bg: url('images/Basics/stucco.gif');
+    --retro-bg: url('/images/Basics/stucco.gif');
 }
 
 body {
@@ -93,7 +91,7 @@ a:focus {
 .nav-list {
     display: flex;
     justify-content: center;
-    align-items: stretch; /* Make all items same height */
+    align-items: stretch; 
     gap: 2rem;
     list-style: none;
     margin: 0;
@@ -102,15 +100,16 @@ a:focus {
 
 .nav-list li {
     margin: 0;
-    flex: 1; /* Make all boxes equal width */
-    max-width: 200px; /* Maximum width for each box */
+    flex: 1; 
+    max-width: 200px; 
+    max-height: 175px; 
 }
 
 .nav-list a {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Center content vertically */
+    justify-content: center;
     text-decoration: none;
     color: #0000ff;
     font-family: 'Comic Sans MS', cursive;
@@ -119,9 +118,9 @@ a:focus {
     border: 2px outset #c0c0c0;
     background: #f0f0f0;
     transition: all 0.3s ease;
-    height: 100%; /* Take full height of parent */
-    min-height: 140px; /* Fixed minimum height */
-    box-sizing: border-box; /* Include padding in height calculation */
+    height: 100%; 
+    min-height: 140px; 
+    box-sizing: border-box; 
     text-align: center;
 }
 
@@ -134,12 +133,12 @@ a:focus {
 .nav-list img {
     max-height: 175px;
     width: auto;
-    flex-shrink: 0; /* Prevent images from shrinking */
+    flex-shrink: 0; 
 }
 
 .nav-list b {
     font-size: 0.9rem;
-    flex-shrink: 0; /* Prevent text from shrinking */
+    flex-shrink: 0; 
 }
 
 /* Content */
@@ -745,7 +744,34 @@ audio {
     font-size: 24px; 
     color: #000000; 
     background: #f0f0f0; 
-    padding: 40px; 
+    padding: 10px 10px 10px 55px; 
     border: 2px outset #c0c0c0; 
     margin: 20px 0;
+}
+
+/* visitor counter style */
+.visitor-counter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0;
+    margin: 20px 0;
+}
+
+.counter-content {
+    text-align: center;
+    padding: 15px;
+    background: #f0f0f0;
+    border: 2px outset #c0c0c0;
+    border-radius: 5px;
+    min-width: 200px;
+}
+
+.visitor-counter img {
+    margin-bottom: 8px;
+}
+
+.visitor-counter font {
+    line-height: 1.4;
 }

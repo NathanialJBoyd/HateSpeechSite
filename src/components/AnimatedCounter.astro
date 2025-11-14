@@ -15,7 +15,7 @@
 
         if (!count) {
             // Start with a random number to make it look realistic
-            count = Math.floor(Math.random() * 1000) + 8000;
+            count = Math.floor(Math.random() * 1000) + 64532;
         } else {
             count = parseInt(count);
         }
@@ -31,31 +31,3 @@
         }
     });
 </script>
-
-<style>
-.visitor-counter {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 20px 0;
-    margin: 20px 0;
-    }
-
-.counter-content {
-    text-align: center;
-    padding: 15px;
-    background: #f0f0f0;
-    border: 2px outset #c0c0c0;
-    border-radius: 5px;
-    min-width: 200px;
-    }
-
-.visitor-counter img {
-    margin-bottom: 8px;
-    }
-
-.visitor-counter font {
-    line-height: 1.4;
-    }
-</style>

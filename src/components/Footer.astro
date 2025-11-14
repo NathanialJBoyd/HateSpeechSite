@@ -1,13 +1,4 @@
 ---
-const navItems = [
-    { name: "Home", path: "/" },
-    { name: "Episodes", path: "/episodes" },
-    { name: "Spectrum", path: "/spectrum" },
-];
-
-// Get current page for active styling
-const currentPath = Astro.url.pathname;
-
 import VisitorCounter from "../components/AnimatedCounter.astro"
 import RandomImage from '../components/RandomImage.astro';
 ---
@@ -18,6 +9,7 @@ import RandomImage from '../components/RandomImage.astro';
             <li><a href="/"><img src="/images/CoolGifs/Home.gif"><b>Home</b></a></li>
             <li><a href="/episodes"><img src="/images/CoolGifs/EmoHate.gif"><b>Hate Speech Episodes</b></a></li>
             <li><a href="/spectrum"><img src="/images/CoolGifs/rainbow1.gif"><b>Spectrum of Hate</b></a></li>
+            <li><a href="https://www.patreon.com/c/Hatereon"><img src="/images/CoolGifs/DonateBlood.gif"><b>Patreon</b></a></li>
         </ul>
     </nav>
     <div class="email-link">
