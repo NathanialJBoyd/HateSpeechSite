@@ -1,0 +1,15 @@
+---
+import NumberedList from '../components/NumberedList.astro';
+import Layout from '../layouts/Layout.astro';
+
+import hateSpectrum from '../data/spectrumOfHate.json';
+---
+
+<Layout title="HaTe SpEeCh pOdCaSt - HoMe" pageTitle="THE SPECTRUM OF HATE">
+<div class="page-container">
+    <NumberedList
+            items={hateSpectrum}
+            style1998={true}
+    />
+</div>
+</Layout>

@@ -1,74 +1,252 @@
-﻿/* 1998 Website Styles */
-body {
-    background-color: #c0c0c0;
-    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.1"><rect width="100" height="100" fill="%23000000"/></svg>');
+﻿/* Modern CSS Reset with 1998 Aesthetic */
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* 1998 Color Palette */
+    --bg-color: #c0c0c0;
+    --text-color: #000000;
+    --link-color: #0000FF;
+    --visited-link: #800080;
+    --active-link: #FF0000;
+    --accent-color: #FF0000;
+    --border-color: #0000FF;
+    --retro-bg: url('images/stucco.gif');
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: var(--retro-bg);
+    background-attachment: fixed;
+    color: var(--text-color);
+    font-family: "Arial", sans-serif;
+    line-height: 1.6;
     padding: 20px;
-    font-family: "Times New Roman", Times, serif;
+    min-height: 100vh;
 }
 
-/* Classic link styles */
+/* Layout */
+.page-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 2rem;
+    border: 2px outset #c0c0c0;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Header */
+.site-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.site-title {
+    font-family: "Comic Sans MS", cursive;
+    color: var(--accent-color);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 0px #000000;
+}
+
+.email-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+/* Links */
 a {
-    color: #0000FF;
+    color: var(--link-color);
     text-decoration: underline;
+    transition: color 0.2s ease;
 }
 
-a:hover {
-    color: #FF0000;
+a:visited {
+    color: var(--visited-link);
+}
+
+a:hover,
+a:focus {
+    color: var(--active-link);
     text-decoration: none;
 }
 
-/* Blink animation for nostalgia */
-blink {
+a:focus {
+    outline: 2px solid var(--active-link);
+    outline-offset: 2px;
+}
+
+/* Navigation */
+.site-nav {
+    margin: 1.5rem 0;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.nav-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Content */
+.main-content {
+    margin: 2rem 0;
+}
+
+.main-content p {
+    margin-bottom: 1rem;
+}
+
+/* Dividers */
+.divider {
+    height: 3px;
+    background-color: var(--border-color);
+    border: none;
+    margin: 1.5rem 0;
+}
+
+/* Construction Elements */
+.construction-banner {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.construction-banner img {
+    max-width: min(400px, 100%);
+    height: auto;
+}
+
+.construction-notice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.875rem;
+    color: var(--accent-color);
+}
+
+/* Counter Section */
+.counter-section {
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.counter-section img {
+    border: 0;
+}
+
+/* Footer */
+.site-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #000000;
+}
+
+.visitor-counter {
+    margin-bottom: 1rem;
+}
+
+.visitor-counter img {
+    margin-bottom: 0.5rem;
+}
+
+.counter-text {
+    font-family: "Courier New", monospace;
+    font-size: 0.875rem;
+}
+
+.counter-number {
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.last-updated {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+/* Webring */
+.webring-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.webring-nav {
+    margin-bottom: 0.5rem;
+}
+
+.webring-nav a {
+    font-size: 0.875rem;
+}
+
+.webring-footer p {
+    font-size: 0.875rem;
+}
+
+/* Blink Animation */
+.blink {
     animation: blink 1s step-end infinite;
 }
 
 @keyframes blink {
-    50% { opacity: 0; }
+    50% {
+        opacity: 0;
+    }
 }
 
-/* Classic table borders */
-table {
-    border: 2px outset #c0c0c0;
-    background-color: #ffffff;
-}
-
-td {
-    border: 1px inset #c0c0c0;
-}
-
-/* Marquee styles */
-marquee {
-    font-family: "Comic Sans MS", cursive;
-    color: #FF0000;
-    font-size: 14px;
-}
-
-/* Classic heading styles */
-h1, h2, h3 {
-    font-family: "Arial Black", Arial, sans-serif;
-}
-
-/* Animated gif borders */
+/* Images */
 img {
+    max-width: 100%;
+    height: auto;
     border: 0;
 }
 
-/* Center align for tables */
-center {
-    text-align: center;
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .page-container {
+        padding: 1rem;
+        margin: 0;
+    }
+
+    .email-link {
+        flex-direction: column;
+    }
+
+    .construction-notice {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
-/* Classic horizontal rule */
-hr {
-    height: 3px;
-    background-color: #0000FF;
-    border: none;
-}
+/* Print Styles */
+@media print {
+    .construction-banner,
+    .construction-notice,
+    .visitor-counter,
+    .webring-footer {
+        display: none;
+    }
 
-/* Visitor counter style */
-.counter {
-    font-family: "Courier New", monospace;
-    font-size: 12px;
-    color: #FF0000;
+    .page-container {
+        border: none;
+        box-shadow: none;
+    }
 }

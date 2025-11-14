@@ -1,0 +1,61 @@
+---
+// Simple counter that uses localStorage
+---
+
+<div class="visitor-counter">
+    <div class="counter-content">
+            You are visitor number: <b id="counter-display">00000</b>
+    </div>
+</div>
+
+<script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get or initialize the counter
+        let count = localStorage.getItem('visitorCount');
+
+        if (!count) {
+            // Start with a random number to make it look realistic
+            count = Math.floor(Math.random() * 1000) + 8000;
+        } else {
+            count = parseInt(count);
+        }
+
+        // Increment the counter
+        count++;
+        localStorage.setItem('visitorCount', count.toString());
+
+        // Display with leading zeros
+        const display = document.getElementById('counter-display');
+        if (display) {
+            display.textContent = count.toString().padStart(5, '0');
+        }
+    });
+</script>
+
+<style>
+.visitor-counter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0;
+    margin: 20px 0;
+    }
+
+.counter-content {
+    text-align: center;
+    padding: 15px;
+    background: #f0f0f0;
+    border: 2px outset #c0c0c0;
+    border-radius: 5px;
+    min-width: 200px;
+    }
+
+.visitor-counter img {
+    margin-bottom: 8px;
+    }
+
+.visitor-counter font {
+    line-height: 1.4;
+    }
+</style>

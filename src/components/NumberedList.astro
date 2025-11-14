@@ -1,0 +1,22 @@
+---
+export interface Props {
+    items: string[];
+    style1998?: boolean;
+}
+
+const { items, style1998 = true } = Astro.props;
+---
+
+{style1998 ? (
+<ol style="font-family: 'Comic Sans MS'; font-size: 14px; color: #000000; background: #f0f0f0; padding: 40px; border: 2px outset #c0c0c0; margin: 20px 0;">
+    {items.map(item => (
+            <li><font face="Arial">{item}</font></li>
+    ))}
+</ol>
+    ) : (
+<ol>
+    {items.map(item => (
+            <li>{item}</li>
+    ))}
+</ol>
+    )}

@@ -1,0 +1,41 @@
+---
+const navItems = [
+    { name: "Home", path: "/" },
+    { name: "Episodes", path: "/episodes" },
+    { name: "Spectrum", path: "/spectrum" },
+];
+
+// Get current page for active styling
+const currentPath = Astro.url.pathname;
+
+import VisitorCounter from "../components/AnimatedCounter.astro"
+---
+<div>
+    <hr class="divider" />
+    <p>This site is all about me and my interests. Check out these cool sections:</p>
+    <nav class="site-nav">
+        <ul class="nav-list">
+            <li>🔗 <a href="/">Home</a></li>
+            <li>📷 <a href="/episodes">Hate Speech Episodes</a></li>
+            <li>🎵 <a href="/spectrum">Spectrum of Hate</a></li>
+        </ul>
+    </nav>
+    <div class="email-link">
+        <img src="/email.gif" alt="Email Me!" />
+        <a href="mailto:hatespeechp@gmail.com">Email the Webmaster!</a>
+    </div>
+    <!-- Visitor counter -->
+    <div class="counter-section">
+        <VisitorCounter/>
+    </div>
+    <!-- Webring -->
+    <footer class="webring-footer">
+        <nav class="webring-nav">
+            <a href="#">&lt;&lt; PREV</a> |
+            <a href="#">RANDOM</a> |
+            <a href="#">LIST SITES</a> |
+            <a href="#">NEXT &gt;&gt;</a>
+        </nav>
+        <p>This site is part of the <strong>Awesome Webring</strong></p>
+    </footer>
+</div>

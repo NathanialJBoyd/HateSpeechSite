@@ -1,8 +1,13 @@
 ---
 export interface Props {
     title: string;
+    pageTitle: string;
 }
-const { title } = Astro.props;
+const { title,pageTitle } = Astro.props;
+
+import '../styles/global.css';
+import RetroNavigation from '../components/RetroNavigation.astro'
+import Header from '../components/Header.astro'
 ---
 
 <!DOCTYPE html>
@@ -10,38 +15,23 @@ const { title } = Astro.props;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
+    <title>{title}</title>
 
     <!-- Classic meta tags -->
     <meta name="description" content="Welcome to my awesome 1998 website!">
     <meta name="keywords" content="web, site, personal, 1998, internet">
 
-    <!-- Import our retro styles -->
-    <link rel="stylesheet" href="/styles/global.css" />
 </head>
-<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
-<!-- Animated construction gif (optional) -->
-<div style="text-align: center;">
-    <img src="/under-construction.gif" alt="Under Construction" width="400" height="50" />
-</div>
+<body>
 
 <!-- Main content -->
-<main>
+<main class="page-container">
+    <Header title={pageTitle}/>
     <slot />
+    <RetroNavigation/>
 </main>
 
-<!-- Visitor counter -->
-<div style="text-align: center; margin-top: 20px;">
-    <img src="/visitor-counter.gif" alt="Visitor Counter" width="88" height="31" />
-    <br />
-    <font size="2" face="Arial">
-        You are visitor number: <b>00001</b>
-    </font>
-</div>
+<!-- Footer with visitor counter -->
 
-<!-- Blink tag for extra nostalgia -->
-<div style="text-align: center;">
-    <blink>Last updated: <script>document.write(new Date().toLocaleDateString())</script></blink>
-</div>
 </body>
 </html>

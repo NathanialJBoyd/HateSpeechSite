@@ -1,0 +1,165 @@
+---
+interface Episode {
+    title: string;
+    pubDate: string;
+    link: string;
+    description: string;
+    audioUrl?: string;
+    duration?: string;
+}
+
+export interface Props {
+    rssFeedUrl: string;
+    episodesPerPage?: number;
+}
+
+const { rssFeedUrl, episodesPerPage = 5 } = Astro.props;
+
+// This will be handled client-side, so we pass the data as props
+const allEpisodes = await getPodcastEpisodes(rssFeedUrl); // Use the same fetch function as before
+---
+
+<div id="podcast-container" data-episodes={JSON.stringify(allEpisodes)} data-per-page={episodesPerPage}>
+    <!-- Client-side will render here -->
+</div>
+
+<script>
+    function initializePodcastPagination() {
+        const container = document.getElementById('podcast-container');
+        if (!container) return;
+
+        const allEpisodes = JSON.parse(container.dataset.episodes);
+        const episodesPerPage = parseInt(container.dataset.perPage);
+        let currentPage = 1;
+        const totalPages = Math.ceil(allEpisodes.length / episodesPerPage);
+
+        function renderEpisodes() {
+            const startIndex = (currentPage - 1) * episodesPerPage;
+            const endIndex = startIndex + episodesPerPage;
+            const currentEpisodes = allEpisodes.slice(startIndex, endIndex);
+
+            // Render episodes and pagination
+            container.innerHTML = `
+        <div class="podcast-section">
+          <h2>📻 Podcast Episodes (Page ${currentPage} of ${totalPages})</h2>
+          <div class="episodes-list">
+            ${currentEpisodes.map(episode => `
+              <div class="episode-item">
+                <h3><a href="${episode.link || episode.audioUrl}" target="_blank">${episode.title}</a></h3>
+                <div class="episode-meta">
+                  <span>🗓️ Released: ${new Date(episode.pubDate).toLocaleDateString()}</span>
+                  ${episode.duration ? `<span>⏱️ Duration: ${episode.duration}</span>` : ''}
+                </div>
+                ${episode.description ? `<div class="episode-description">${episode.description.substring(0, 200)}...</div>` : ''}
+                ${episode.audioUrl ? `
+                  <div class="episode-audio">
+                    <audio controls><source src="${episode.audioUrl}" type="audio/mpeg"></audio>
+                  </div>
+                ` : ''}
+                <hr class="episode-divider">
+              </div>
+            `).join('')}
+          </div>
+          ${totalPages > 1 ? `
+            <div class="pagination">
+              ${currentPage > 1 ? `<button onclick="goToPage(${currentPage - 1})">← Prev</button>` : ''}
+              ${Array.from({length: totalPages}, (_, i) => i + 1).map(page => `
+                <button onclick="goToPage(${page})" class="${page === currentPage ? 'active' : ''}">${page}</button>
+              `).join('')}
+              ${currentPage < totalPages ? `<button onclick="goToPage(${currentPage + 1})">Next →</button>` : ''}
+            </div>
+          ` : ''}
+        </div>
+      `;
+        }
+
+        window.goToPage = function(page) {
+            currentPage = page;
+            renderEpisodes();
+        };
+
+        renderEpisodes();
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', initializePodcastPagination);
+</script>
+
+<style>
+.podcast-section {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: #ffffff;
+    border: 2px outset #c0c0c0;
+    }
+
+.episodes-list {
+    margin-top: 1rem;
+    }
+
+.episode-item {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f0f0f0;
+    border: 1px inset #c0c0c0;
+    }
+
+.episode-title {
+    font-family: "Arial", sans-serif;
+    margin-bottom: 0.5rem;
+    }
+
+.episode-title a {
+    color: #0000FF;
+    text-decoration: underline;
+    font-size: 1.2rem;
+    }
+
+.episode-title a:hover {
+    color: #FF0000;
+    text-decoration: none;
+    }
+
+.episode-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    }
+
+.episode-description {
+    margin: 0.5rem 0;
+    line-height: 1.4;
+    font-size: 0.95rem;
+    }
+
+.episode-audio {
+    margin: 0.5rem 0;
+    }
+
+.episode-divider {
+    height: 1px;
+    background: #0000FF;
+    border: none;
+    margin: 1rem 0 0 0;
+    }
+
+.no-episodes {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    }
+
+audio {
+    filter: sepia(0.3) saturate(1.2);
+    }
+
+@media (max-width: 768px) {
+    .episode-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+    }
+    }
+</style>
