@@ -16,6 +16,49 @@ export interface Props {
 
 const { rssFeedUrl, episodesPerPage = 5 } = Astro.props;
 
+// Enhanced image extraction function
+function extractImageUrl(item, description) {
+    // Try different RSS image formats in order of priority
+
+    // 1. iTunes image with href attribute (most common for podcasts)
+    const itunesImageHref = item.match(/<itunes:image[^>]*href="([^"]*)"[^>]*>/i);
+    if (itunesImageHref && itunesImageHref[1]) {
+        return itunesImageHref[1].trim();
+    }
+
+    // 2. iTunes image with nested url (less common)
+    const itunesImageUrl = item.match(/<itunes:image[^>]*>[\s]*<url>([^<]*)<\/url>[\s]*<\/itunes:image>/i);
+    if (itunesImageUrl && itunesImageUrl[1]) {
+        return itunesImageUrl[1].trim();
+    }
+
+    // 3. Media thumbnail
+    const mediaThumbnail = item.match(/<media:thumbnail[^>]*url="([^"]*)"[^>]*>/i);
+    if (mediaThumbnail && mediaThumbnail[1]) {
+        return mediaThumbnail[1].trim();
+    }
+
+    // 4. Media content (image type)
+    const mediaContent = item.match(/<media:content[^>]*url="([^"]*)"[^>]*type="image\/(jpg|jpeg|png|gif|webp)"[^>]*>/i);
+    if (mediaContent && mediaContent[1]) {
+        return mediaContent[1].trim();
+    }
+
+    // 5. Enclosure with image type
+    const enclosureImage = item.match(/<enclosure[^>]*url="([^"]*\.(jpg|jpeg|png|gif|webp))"[^>]*type="image\/(jpg|jpeg|png|gif|webp)"[^>]*>/i);
+    if (enclosureImage && enclosureImage[1]) {
+        return enclosureImage[1].trim();
+    }
+
+    // 6. Image tag in description
+    const descImage = description.match(/<img[^>]*src="([^"]*)"[^>]*>/i);
+    if (descImage && descImage[1]) {
+        return descImage[1].trim();
+    }
+
+    return '';
+}
+
 // Fetch all episodes at build time
 async function getPodcastEpisodes(feedUrl: string): Promise<Episode[]> {
     try {
@@ -48,12 +91,14 @@ async function getPodcastEpisodes(feedUrl: string): Promise<Episode[]> {
                 description = description.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1');
             }
 
+            // Extract image using enhanced parser
+            const imageUrl = extractImageUrl(item, description);
+
             // Extract other fields
             const pubDateMatch = item.match(/<pubDate>([\s\S]*?)<\/pubDate>/i);
             const linkMatch = item.match(/<link>([\s\S]*?)<\/link>/i);
             const enclosureMatch = item.match(/<enclosure[^>]*url="([^"]*)"[^>]*>/i);
             const durationMatch = item.match(/<itunes:duration>([\s\S]*?)<\/itunes:duration>/i);
-            const imageMatch = item.match(/<itunes:imageUrl>([\s\S]*?)<\/itunes:imageUrl>/i);
 
             if (title && pubDateMatch) {
                 episodes.push({
@@ -63,7 +108,7 @@ async function getPodcastEpisodes(feedUrl: string): Promise<Episode[]> {
                     description: description,
                     audioUrl: enclosureMatch ? enclosureMatch[1] : undefined,
                     duration: durationMatch ? durationMatch[1].trim() : undefined,
-                    imageUrl: imageMatch ? imageMatch[1] : undefined
+                    imageUrl: imageUrl || undefined
                 });
             }
         }
@@ -83,12 +128,12 @@ const totalPages = Math.ceil(totalEpisodes / episodesPerPage);
 // Create a cleaned version for display
 const cleanedEpisodes = allEpisodes.map(episode => ({
     ...episode,
-    // Clean HTML entities and tags for display
+    // Clean title but preserve HTML in description
     title: cleanText(episode.title),
-    description: cleanText(episode.description)
+    description: cleanDescription(episode.description)
 }));
 
-// Helper function to clean text
+// Helper function to clean text (for titles)
 function cleanText(text: string): string {
     if (!text) return '';
 
@@ -101,11 +146,67 @@ function cleanText(text: string): string {
         .replace(/&#039;/g, "'")
         .replace(/&nbsp;/g, ' ');
 
-    // Remove any remaining HTML tags but preserve line breaks
-    cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
+    // Remove any remaining HTML tags
     cleaned = cleaned.replace(/<[^>]*>/g, '');
 
     return cleaned.trim();
+}
+
+// Helper function to clean descriptions while preserving safe HTML
+function cleanDescription(description: string): string {
+    if (!description) return '';
+
+    // Decode HTML entities first
+    let cleaned = description
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#039;/g, "'")
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&mdash;/g, '—')
+        .replace(/&ndash;/g, '–')
+        .replace(/&hellip;/g, '…');
+
+    // Remove CDATA wrappers and trailing ]]>
+    cleaned = cleaned.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1');
+    cleaned = cleaned.replace(/\]\]>$/g, ''); // Remove trailing ]]>
+    cleaned = cleaned.replace(/\s*\]\]>\s*$/g, ''); // Remove trailing ]]> with whitespace
+
+    // Preserve safe HTML tags: p, br, strong, b, em, i, u, a, ul, ol, li
+    // First, close any unclosed tags that might break the HTML
+    cleaned = cleaned
+        .replace(/<p>/gi, '<p>')
+        .replace(/<br>/gi, '<br>')
+        .replace(/<br\s*\/>/gi, '<br>')
+        .replace(/<strong>/gi, '<strong>')
+        .replace(/<\/strong>/gi, '</strong>')
+        .replace(/<b>/gi, '<b>')
+        .replace(/<\/b>/gi, '</b>')
+        .replace(/<em>/gi, '<em>')
+        .replace(/<\/em>/gi, '</em>')
+        .replace(/<i>/gi, '<i>')
+        .replace(/<\/i>/gi, '</i>')
+        .replace(/<u>/gi, '<u>')
+        .replace(/<\/u>/gi, '</u>');
+
+    // Handle links - ensure they have proper attributes
+    cleaned = cleaned.replace(
+        /<a\s+([^>]*)>/gi,
+        '<a $1 target="_blank" rel="noopener noreferrer">'
+    );
+
+    return cleaned.trim();
+}
+
+// Create a new function that prepares the display version
+function prepareDisplayDescription(description: string): string {
+    const cleaned = cleanDescription(description);
+    let display = cleaned.substring(0, 5000);
+    if (cleaned.length > 5000) {
+        display += '...';
+    }
+    return display;
 }
 
 // Serialize for client-side
@@ -126,7 +227,7 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
     <div class="podcast-section">
         <h2>
             <font face="Arial" color="#0000FF" size="5">
-                📻 Podcast Episodes
+                <img src="./images/dancingMic.gif"/> Podcast Episodes <img src="./images/dancingMic.gif"/>
                 <span id="page-indicator" class="episode-count">(Page 1 of {totalPages})</span>
             </font>
         </h2>
@@ -135,22 +236,20 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
             <!-- Server-side rendered first page for better initial load -->
             {cleanedEpisodes.slice(0, episodesPerPage).map((episode, index) => (
                     <div class="episode-item">
-                        {/* Episode Image */}
-                        <p>??????????</p>
-                        {episode.imageUrl && (
-                                <div class="episode-image">
-                                    <img src={episode.imageUrl} alt={episode.imageUrl} loading="lazy" />
-                                    <p>!!!!!</p>
-                                </div>
-                        )}
-
-                        <div class="episode-content">
+                        {/* Header block with image and title */}
+                        <div class="episode-header">
+                            {episode.imageUrl && (
+                                    <div class="episode-image">
+                                        <img src={episode.imageUrl} alt={episode.title} loading="lazy" />
+                                    </div>
+                            )}
                             <h3 class="episode-title">
-                                <a href={episode.link || episode.audioUrl || '#'} target="_blank" rel="noopener">
                                     {episode.title || 'Untitled Episode'}
-                                </a>
                             </h3>
+                        </div>
 
+                        {/* Content block with meta, description, and audio */}
+                        <div class="episode-content">
                             <div class="episode-meta">
               <span class="episode-date">
                 🗓️ <strong>Released:</strong> {new Date(episode.pubDate).toLocaleDateString()}
@@ -164,14 +263,12 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
                             </div>
 
                             {episode.description && (
-                                    <div class="episode-description">
-                                        {episode.description.substring(0, 800)}
-                                        {episode.description.length > 800 ? '...' : ''}
-                                    </div>
+                                    <div class="episode-description" set:html={prepareDisplayDescription(episode.description)} />
                             )}
+
                             {episode.audioUrl && (
                                     <div class="episode-audio">
-                                        <audio controls style="width: 100%; max-width: 400px; height: 30px;">
+                                        <audio controls>
                                             <source src={episode.audioUrl} type="audio/mpeg" />
                                             Your browser does not support the audio element.
                                         </audio>
@@ -184,7 +281,7 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
             ))}
         </div>
 
-        <!-- Pagination Controls -->
+        <!-- Pagination Controls and episode-info remain the same -->
         {totalPages > 1 && (
                 <div class="pagination" id="pagination-controls">
                     <button class="pagination-link pagination-first" id="first-page">
@@ -287,6 +384,10 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
                     const episodeItem = document.createElement('div');
                     episodeItem.className = 'episode-item';
 
+                    // Create header block with image and title
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'episode-header';
+
                     // Add image if available
                     if (episode.imageUrl) {
                         const imageDiv = document.createElement('div');
@@ -298,11 +399,8 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
                         img.loading = 'lazy';
 
                         imageDiv.appendChild(img);
-                        episodeItem.appendChild(imageDiv);
+                        headerDiv.appendChild(imageDiv);
                     }
-
-                    const contentDiv = document.createElement('div');
-                    contentDiv.className = 'episode-content';
 
                     // Title
                     const title = document.createElement('h3');
@@ -314,7 +412,13 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
                     titleLink.rel = 'noopener';
                     titleLink.textContent = episode.title || 'Untitled Episode';
                     title.appendChild(titleLink);
-                    contentDiv.appendChild(title);
+                    headerDiv.appendChild(title);
+
+                    episodeItem.appendChild(headerDiv);
+
+                    // Create content block with meta, description, and audio
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'episode-content';
 
                     // Meta information
                     const meta = document.createElement('div');
@@ -334,7 +438,7 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
 
                     contentDiv.appendChild(meta);
 
-                    // Description - use innerHTML since we've already cleaned the HTML server-side
+                    // Description
                     if (episode.description) {
                         const descriptionDiv = document.createElement('div');
                         descriptionDiv.className = 'episode-description';
@@ -344,11 +448,16 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
                             displayDescription += '...';
                         }
 
+                        // Remove any remaining CDATA artifacts client-side as a fallback
+                        displayDescription = displayDescription.replace(/\]\]>\s*$/g, '');
+                        displayDescription = displayDescription.replace(/\s*\]\]>\s*$/g, '');
+
                         // Use innerHTML since the description has already been cleaned and is safe
                         descriptionDiv.innerHTML = displayDescription;
                         contentDiv.appendChild(descriptionDiv);
                     }
 
+                    // Audio player
                     // Audio player
                     if (episode.audioUrl) {
                         const audioDiv = document.createElement('div');
@@ -356,9 +465,6 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
 
                         const audio = document.createElement('audio');
                         audio.controls = true;
-                        audio.style.width = '100%';
-                        audio.style.maxWidth = '400px';
-                        audio.style.height = '30px';
 
                         const source = document.createElement('source');
                         source.src = episode.audioUrl;
@@ -367,6 +473,13 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
                         audio.appendChild(source);
                         audio.appendChild(document.createTextNode('Your browser does not support the audio element.'));
                         audioDiv.appendChild(audio);
+
+                        // Add audio caption
+                        const caption = document.createElement('div');
+                        caption.className = 'audio-caption';
+                        caption.innerHTML = '<font size="1" face="Arial">🎵 Click play to listen!</font>';
+                        audioDiv.appendChild(caption);
+
                         contentDiv.appendChild(audioDiv);
                     }
 
@@ -461,246 +574,3 @@ const serializedEpisodes = JSON.stringify(cleanedEpisodes);
         initializePagination();
     });
 </script>
-
-<style>
-.podcast-section {
-    margin: 2rem 0;
-    padding: 1rem;
-    background: #ffffff;
-    border: 2px outset #c0c0c0;
-    }
-
-.episode-count {
-    font-size: 0.8em;
-    color: #666;
-    }
-
-.episodes-list {
-    margin-top: 1rem;
-    }
-
-.episode-item {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: #f0f0f0;
-    border: 1px inset #c0c0c0;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    }
-
-.episode-image {
-    text-align: center;
-    }
-
-.episode-image img {
-    max-width: 300px;
-    max-height: 300px;
-    width: auto;
-    height: auto;
-    border: 2px outset #c0c0c0;
-    }
-
-.episode-content {
-    flex: 1;
-    }
-
-.episode-title {
-    font-family: "Arial", sans-serif;
-    margin-bottom: 0.5rem;
-    }
-
-.episode-title a {
-    color: #0000FF;
-    text-decoration: underline;
-    font-size: 1.2rem;
-    }
-
-.episode-title a:hover {
-    color: #FF0000;
-    text-decoration: none;
-    }
-
-.episode-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    color: #666;
-    }
-
-.episode-description {
-    margin: 0.5rem 0;
-    line-height: 1.4;
-    font-size: 0.95rem;
-    max-height: 300px;
-    overflow-y: auto;
-    padding: 0.5rem;
-    background: #ffffff;
-    border: 1px inset #c0c0c0;
-    }
-
-/* Style the preserved HTML elements */
-.episode-description p {
-    margin-bottom: 0.75rem;
-    }
-
-.episode-description br {
-    content: '';
-    display: block;
-    margin-bottom: 0.5rem;
-    }
-
-.episode-description strong,
-.episode-description b {
-    font-weight: bold;
-    color: #0000FF;
-    }
-
-.episode-description em,
-.episode-description i {
-    font-style: italic;
-    }
-
-.episode-description u {
-    text-decoration: underline;
-    }
-
-.episode-description a {
-    color: #0000FF;
-    text-decoration: underline;
-    }
-
-.episode-description a:hover {
-    color: #FF0000;
-    text-decoration: none;
-    }
-
-.episode-description ul,
-.episode-description ol {
-    margin: 0.5rem 0;
-    padding-left: 1.5rem;
-    }
-
-.episode-description li {
-    margin-bottom: 0.25rem;
-    }
-
-.episode-audio {
-    margin: 0.5rem 0;
-    }
-
-.episode-divider {
-    height: 1px;
-    background: #0000FF;
-    border: none;
-    margin: 1rem 0 0 0;
-    }
-
-/* Pagination Styles */
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 2rem 0 1rem 0;
-    padding: 1rem;
-    background: #f0f0f0;
-    border: 1px inset #c0c0c0;
-    }
-
-.page-numbers {
-    display: flex;
-    gap: 0.5rem;
-    }
-
-.pagination-link {
-    padding: 0.5rem 1rem;
-    background: #ffffff;
-    border: 2px outset #c0c0c0;
-    color: #0000FF;
-    text-decoration: none;
-    font-family: "Arial", sans-serif;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    }
-
-.pagination-link:hover:not(:disabled) {
-    background: #0000FF;
-    color: #ffffff;
-    text-decoration: none;
-    border: 2px inset #c0c0c0;
-    }
-
-.pagination-link:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    }
-
-.pagination-active {
-    background: #0000FF;
-    color: #ffffff;
-    border: 2px inset #c0c0c0;
-    font-weight: bold;
-    }
-
-.episode-info {
-    text-align: center;
-    margin-top: 1rem;
-    padding: 0.5rem;
-    background: #f0f0f0;
-    border: 1px inset #c0c0c0;
-    }
-
-audio {
-    filter: sepia(0.3) saturate(1.2);
-    }
-
-@media (max-width: 768px) {
-    .episode-item {
-    flex-direction: column;
-    }
-
-    .episode-image img {
-    max-width: 100%;
-    }
-
-    .episode-meta {
-    flex-direction: column;
-    gap: 0.5rem;
-    }
-
-    .pagination {
-    gap: 0.25rem;
-    }
-
-    .pagination-link {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-    }
-
-    .episode-description {
-    max-height: 200px;
-    font-size: 0.9rem;
-    }
-    }
-
-@media (min-width: 769px) {
-    .episode-item {
-    flex-direction: row;
-    align-items: flex-start;
-    }
-
-    .episode-image {
-    flex-shrink: 0;
-    margin-right: 1rem;
-    }
-
-    .episode-image img {
-    max-width: 200px;
-    }
-    }
-</style>
