@@ -9,19 +9,19 @@ const navItems = [
 const currentPath = Astro.url.pathname;
 
 import VisitorCounter from "../components/AnimatedCounter.astro"
+import RandomImage from '../components/RandomImage.astro';
 ---
 <div>
     <hr class="divider" />
-    <p>This site is all about me and my interests. Check out these cool sections:</p>
     <nav class="site-nav">
         <ul class="nav-list">
-            <li>🔗 <a href="/">Home</a></li>
-            <li>📷 <a href="/episodes">Hate Speech Episodes</a></li>
-            <li>🎵 <a href="/spectrum">Spectrum of Hate</a></li>
+            <li><a href="/"><img src="/images/CoolGifs/Home.gif"><b>Home</b></a></li>
+            <li><a href="/episodes"><img src="/images/CoolGifs/EmoHate.gif"><b>Hate Speech Episodes</b></a></li>
+            <li><a href="/spectrum"><img src="/images/CoolGifs/rainbow1.gif"><b>Spectrum of Hate</b></a></li>
         </ul>
     </nav>
     <div class="email-link">
-        <img src="/email.gif" alt="Email Me!" />
+        <RandomImage maxHeight="140px" />
         <a href="mailto:hatespeechp@gmail.com">Email the Webmaster!</a>
     </div>
     <!-- Visitor counter -->
@@ -36,6 +36,6 @@ import VisitorCounter from "../components/AnimatedCounter.astro"
             <a href="#">LIST SITES</a> |
             <a href="#">NEXT &gt;&gt;</a>
         </nav>
-        <p>This site is part of the <strong>Awesome Webring</strong></p>
+        <p>This site is part of the <strong>Two Bad Podcasters Webring</strong></p>
     </footer>
 </div>

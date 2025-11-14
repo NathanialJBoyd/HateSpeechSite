@@ -14,7 +14,7 @@
     --active-link: #FF0000;
     --accent-color: #FF0000;
     --border-color: #0000FF;
-    --retro-bg: url('images/stucco.gif');
+    --retro-bg: url('images/Basics/stucco.gif');
 }
 
 body {
@@ -84,20 +84,62 @@ a:focus {
 
 /* Navigation */
 .site-nav {
-    margin: 1.5rem 0;
+    background: #ffffff;
+    border: 2px outset #c0c0c0;
+    padding: 1rem;
+    margin: 1rem 0;
 }
 
 .nav-list {
-    list-style: none;
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    justify-content: center;
+    align-items: stretch; /* Make all items same height */
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .nav-list li {
+    margin: 0;
+    flex: 1; /* Make all boxes equal width */
+    max-width: 200px; /* Maximum width for each box */
+}
+
+.nav-list a {
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center; /* Center content vertically */
+    text-decoration: none;
+    color: #0000ff;
+    font-family: 'Comic Sans MS', cursive;
     gap: 0.5rem;
+    padding: 1.5rem 1rem;
+    border: 2px outset #c0c0c0;
+    background: #f0f0f0;
+    transition: all 0.3s ease;
+    height: 100%; /* Take full height of parent */
+    min-height: 140px; /* Fixed minimum height */
+    box-sizing: border-box; /* Include padding in height calculation */
+    text-align: center;
+}
+
+.nav-list a:hover {
+    background: #e0e0e0;
+    border-style: inset;
+    color: #ff0000;
+}
+
+.nav-list img {
+    max-height: 175px;
+    width: auto;
+    flex-shrink: 0; /* Prevent images from shrinking */
+}
+
+.nav-list b {
+    font-size: 0.9rem;
+    flex-shrink: 0; /* Prevent text from shrinking */
 }
 
 /* Content */
@@ -233,6 +275,23 @@ img {
     .construction-notice {
         flex-direction: column;
         text-align: center;
+    }
+    .nav-list {
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .nav-list a {
+        padding: 0.5rem;
+        min-width: 80px;
+    }
+
+    .nav-list img {
+        max-height: 30px;
+    }
+
+    .nav-list b {
+        font-size: 0.8rem;
     }
 }
 
@@ -559,4 +618,134 @@ audio {
         max-height: 200px;
         font-size: 0.9rem;
     }
+}
+
+/* Image Wobble Effects */
+.wobble {
+    animation: wobble 0.5s ease-in-out infinite;
+}
+
+.wobble-slow {
+    animation: wobble 2s ease-in-out infinite;
+}
+
+.wobble-fast {
+    animation: wobble 0.2s ease-in-out infinite;
+}
+
+.wobble-hover:hover {
+    animation: wobble 0.3s ease-in-out infinite;
+}
+
+@keyframes wobble {
+    0% { transform: rotate(0deg) translateX(0px); }
+    25% { transform: rotate(1deg) translateX(1px); }
+    50% { transform: rotate(0deg) translateX(0px); }
+    75% { transform: rotate(-1deg) translateX(-1px); }
+    100% { transform: rotate(0deg) translateX(0px); }
+}
+
+/* More extreme wobble */
+.wobble-crazy {
+    animation: crazyWobble 0.4s ease-in-out infinite;
+}
+
+@keyframes crazyWobble {
+    0% { transform: rotate(-3deg) translateX(-3px) translateY(1px); }
+    25% { transform: rotate(3deg) translateX(3px) translateY(-1px); }
+    50% { transform: rotate(-2deg) translateX(-2px) translateY(2px); }
+    75% { transform: rotate(2deg) translateX(2px) translateY(-2px); }
+    100% { transform: rotate(-3deg) translateX(-3px) translateY(1px); }
+}
+
+/* Pulsing wobble */
+.wobble-pulse {
+    animation: pulseWobble 1s ease-in-out infinite;
+}
+
+@keyframes pulseWobble {
+    0% { transform: scale(1) rotate(-3deg); }
+    50% { transform: scale(1.10) rotate(3deg); }
+    100% { transform: scale(1) rotate(-3deg); }
+}
+
+.welcome-container {
+    container-type: inline-size;
+    container-name: welcome;
+}
+
+.welcome-content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    justify-items: center;
+    gap: clamp(1rem, 5cqi, 3rem);
+    padding: clamp(1rem, 5cqi, 3rem);
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 3px outset #c0c0c0;
+}
+
+.welcome-image {
+    width: clamp(60px, 12cqi, 180px);
+    height: auto;
+    object-fit: contain;
+    border: 2px solid #0000ff;
+}
+
+.host-figure {
+    margin: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.host-figure figcaption {
+    font-family: 'Comic Sans MS', cursive;
+    color: #ff0000;
+    font-weight: bold;
+    font-size: clamp(0.8rem, 2cqi, 1.2rem);
+}
+
+.welcome-text {
+    text-align: center;
+    padding: 0 1rem;
+}
+
+.welcome-text h1 {
+    font-family: 'Comic Sans MS', cursive;
+    color: #0000ff;
+    font-size: clamp(1.5rem, 4cqi, 3rem);
+    margin: 0 0 0.5rem 0;
+    text-shadow: 2px 2px 0 #ffff00;
+}
+
+.welcome-text h4 {
+    font-family: Arial, sans-serif;
+    font-size: clamp(0.9rem, 2cqi, 1.3rem);
+    margin: 0;
+    color: #000000;
+}
+
+/* Maintain horizontal layout at all sizes */
+.welcome-content {
+    grid-template-columns: 1fr auto 1fr;
+}
+
+/* Optional: Add a subtle background pattern */
+.welcome-content {
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='13' cy='13' r='1'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.spectrum-list {
+    font-family: 'Comic Sans MS'; 
+    font-size: 24px; 
+    color: #000000; 
+    background: #f0f0f0; 
+    padding: 40px; 
+    border: 2px outset #c0c0c0; 
+    margin: 20px 0;
 }

@@ -1,0 +1,56 @@
+﻿---
+
+const gifFilenames = [
+    '100bux.gif',
+    'billgatez.gif',
+    'billgatez.gif',
+    'billtoon.gif',
+    'bun1.gif',
+    'bun2.gif',
+    'dog1.gif',
+    'dragon1.gif',
+    'guy.gif',
+    'HateSpeech1.gif',
+    'horse1.gif',
+    'MarsMan.gif',
+    'mermaid.gif',
+    'mouth.gif',
+    'pacman.gif',
+    'pig.gif',
+    'polar.gif',
+    'skull1.gif',
+    'skull2.gif',
+    'tax1.gif'
+];
+
+// Select random gif
+const randomGif = gifFilenames[Math.floor(Math.random() * gifFilenames.length)];
+const imagePath = `/images/CoolGifs/${randomGif}`;
+
+// Props for customization
+export interface Props {
+    className?: string;
+    maxHeight?: string;
+    width?: string;
+    wobbleEffect?: boolean;
+}
+
+const {
+    className = "",
+    maxHeight = "120px",
+    width = "auto",
+    wobbleEffect = true
+} = Astro.props;
+---
+
+<img
+        src={imagePath}
+        alt={`Cool gif: ${randomGif.replace('.gif', '').replace(/-/g, ' ')}`}
+        class:list={[
+            className,
+            wobbleEffect && 'wobble-slow',
+            'random-gif'
+        ]}
+        style={{ maxHeight, width }}
+        loading="lazy"
+/>
