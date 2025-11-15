@@ -13,6 +13,7 @@
     --accent-color: #FF0000;
     --border-color: #0000FF;
     --retro-bg: url('/images/Basics/stucco.gif');
+    --retro-font: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Bradley Hand", "URW Chancery L", cursive, sans-serif;
 }
 
 body {
@@ -43,7 +44,7 @@ body {
 }
 
 .site-title {
-    font-family: "Comic Sans MS", cursive;
+    font-family: var(--retro-font);
     color: var(--accent-color);
     font-size: clamp(1.5rem, 4vw, 2.5rem);
     margin-bottom: 1rem;
@@ -112,7 +113,7 @@ a:focus {
     justify-content: center;
     text-decoration: none;
     color: #0000ff;
-    font-family: 'Comic Sans MS', cursive;
+    font-family: var(--retro-font);
     gap: 0.5rem;
     padding: 1.5rem 1rem;
     border: 2px outset #c0c0c0;
@@ -703,7 +704,7 @@ audio {
 }
 
 .host-figure figcaption {
-    font-family: 'Comic Sans MS', cursive;
+    font-family: var(--retro-font);
     color: #ff0000;
     font-weight: bold;
     font-size: clamp(0.8rem, 2cqi, 1.2rem);
@@ -715,7 +716,7 @@ audio {
 }
 
 .welcome-text h1 {
-    font-family: 'Comic Sans MS', cursive;
+    font-family: var(--retro-font);
     color: #0000ff;
     font-size: clamp(1.5rem, 4cqi, 3rem);
     margin: 0 0 0.5rem 0;
